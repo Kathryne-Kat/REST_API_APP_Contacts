@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const path = require("path");
 const fs = require("fs/promises");
+const Jimp = require("jimp");
 
 const { User } = require("../models/user");
 
@@ -68,6 +69,9 @@ const logout = async (req, res) => {
 const updateAvatar = async (req, res) => {
   const { _id } = req.user;
   const { path: tempUpload, originalname } = req.file;
+  const avatarImg = await Jimp.read(tempUpload);
+  avatarImg.resize(250, 250);
+  await avatarImg.writeAsync(tempUpload);
   const filename = `${_id}_${originalname}`;
   const resultUpload = path.join(avatarsDir, filename);
   await fs.rename(tempUpload, resultUpload);
